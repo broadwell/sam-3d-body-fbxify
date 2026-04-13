@@ -6,7 +6,7 @@ the Estimate Pose action button.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
+from i18n import Translator
 
 
 def create_pose_results_section(translator: Translator) -> Dict[str, Any]:

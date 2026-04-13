@@ -6,7 +6,7 @@ title, description, and language selector.
 """
 import gradio as gr
 from typing import Tuple, Any
-from fbxify.i18n import Translator, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE
+from i18n import Translator, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE
 
 
 def create_header_section(translator: Translator) -> Tuple[Any, Any, Any, Any]:

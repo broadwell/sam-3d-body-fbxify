@@ -5,7 +5,7 @@ This module provides UI components for the generate button and output files.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
+from i18n import Translator
 
 
 def create_fbx_results_section(translator: Translator) -> Dict[str, Any]:

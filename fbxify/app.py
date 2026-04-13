@@ -5,13 +5,21 @@ This module creates the Gradio UI using modular sections and delegates
 all business logic to a Backend (LocalBackend or RemoteBackend).
 """
 import os
+ROOT = os.path.dirname(os.path.dirname(__file__))
+
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+top_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(top_dir)
+sys.path.append('sam_3d_body')
+
 import argparse
 import json
 import gradio as gr
-from fbxify.i18n import Translator, DEFAULT_LANGUAGE
-from fbxify.utils import _is_video_path
-from fbxify.gradio_ui.header_section import create_header_section, update_header_language
-from fbxify.gradio_ui.entry_section import (
+from i18n import Translator, DEFAULT_LANGUAGE
+from utils import _is_video_path
+from gradio_ui.header_section import create_header_section, update_header_language
+from gradio_ui.entry_section import (
     toggle_tracking_inputs,
     toggle_fov_inputs,
     update_entry_language,
@@ -20,28 +28,29 @@ from fbxify.gradio_ui.entry_section import (
     TRACKING_MODE_INFERENCE,
     TRACKING_MODE_INFERENCE_BBOX,
 )
-from fbxify.gradio_ui.tracking_section import (
+from gradio_ui.tracking_section import (
     build_tracking_config_from_gui,
     load_tracking_configuration,
     save_tracking_configuration,
     update_tracking_language,
 )
-from fbxify.gradio_ui.pose_results_section import update_pose_results_language
-from fbxify.gradio_ui.fbx_processing_section import update_fbx_processing_language, toggle_generate_fbx_button
-from fbxify.gradio_ui.fbx_results_section import update_fbx_results_language
-from fbxify.gradio_ui.fbx_options_section import toggle_extrinsics_inputs, update_fbx_options_language
-from fbxify import VERSION
-from fbxify.gradio_ui.developer_section import (
+from gradio_ui.pose_results_section import update_pose_results_language
+from gradio_ui.fbx_processing_section import update_fbx_processing_language, toggle_generate_fbx_button
+from gradio_ui.fbx_results_section import update_fbx_results_language
+from gradio_ui.fbx_options_section import toggle_extrinsics_inputs, update_fbx_options_language
+#from . import VERSION
+#import VERSION
+from gradio_ui.developer_section import (
     update_pose_cli_language,
     update_fbx_cli_language,
     update_pose_dev_language,
     update_fbx_dev_language,
     toggle_camera_inputs,
 )
-from fbxify.gradio_ui.pose_tab import create_pose_tab
-from fbxify.gradio_ui.fbx_tab import create_fbx_tab
+from gradio_ui.pose_tab import create_pose_tab
+from gradio_ui.fbx_tab import create_fbx_tab
 
-_CHECKPOINTS_BASE = os.environ.get("CHECKPOINTS_DIR", "/fbxify/checkpoints").rstrip("/")
+_CHECKPOINTS_BASE = os.environ.get("CHECKPOINTS_DIR", "checkpoints").rstrip("/")
 VITH_CHECKPOINT_PATH = os.path.join(_CHECKPOINTS_BASE, "sam-3d-body-vith")
 DINOV3_CHECKPOINT_PATH = os.path.join(_CHECKPOINTS_BASE, "sam-3d-body-dinov3")
 
@@ -997,16 +1006,16 @@ def create_app(backend):
                 # Check if it's new format (has metadata keys) or old format (direct frames)
                 if isinstance(data, dict) and "frames" in data and "version" in data:
                     file_version = data.get("version", "unknown")
-                    if file_version != VERSION:
-                        # Show warning using Gradio's warning mechanism
-                        warning_msg = (
-                            f"⚠️ WARNING: Estimation file version ({file_version}) differs from current version ({VERSION}). "
-                            f"File may have been created with a different version of the software. "
-                            f"Proceeding with caution - errors may occur if formats are incompatible."
-                        )
-                        print(warning_msg)
-                        # Also raise a Gradio warning that will be displayed to the user
-                        gr.Warning(warning_msg)
+                    #if file_version != VERSION:
+                    #    # Show warning using Gradio's warning mechanism
+                    #    warning_msg = (
+                    #        f"⚠️ WARNING: Estimation file version ({file_version}) differs from current version ({VERSION}). "
+                    #        f"File may have been created with a different version of the software. "
+                    #        f"Proceeding with caution - errors may occur if formats are incompatible."
+                    #    )
+                    #    print(warning_msg)
+                    #    # Also raise a Gradio warning that will be displayed to the user
+                    #    gr.Warning(warning_msg)
                 
             except Exception as e:
                 # If validation fails, still enable the button (let generate_fbx handle the error)
@@ -1372,11 +1381,11 @@ def create_app(backend):
 if __name__ == "__main__":
     use_local = os.environ.get("FBXIFY_LOCAL", "").strip().lower() in ("1", "true", "yes", "on")
     if use_local:
-        from fbxify.pose_estimation_manager import PoseEstimationManager
-        from fbxify.fbxify_manager import FbxifyManager
-        from fbxify.fbxify_manager import FbxDataPrepManager
-        from fbxify.tracking.tracking_manager import TrackingManager
-        from fbxify.checkpoint_download import download_mhr_assets_if_missing
+        from pose_estimation_manager import PoseEstimationManager
+        from fbxify_manager import FbxifyManager
+        from fbxify_manager import FbxDataPrepManager
+        from tracking.tracking_manager import TrackingManager
+        from checkpoint_download import download_mhr_assets_if_missing
 
         cache_dir = os.environ.get("CACHE_DIR", "").rstrip("/") or os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache"
@@ -1411,7 +1420,7 @@ if __name__ == "__main__":
         data_prep_manager = FbxDataPrepManager()
         manager = FbxifyManager(estimation_manager, data_prep_manager)
         tracking_manager = TrackingManager()
-        from fbxify.backend import LocalBackend
+        from backend import LocalBackend
         backend = LocalBackend(manager, tracking_manager)
     else:
         remote_url = os.environ.get("FBXIFY_REMOTE_WORKER_URL", "").strip()
@@ -1420,7 +1429,7 @@ if __name__ == "__main__":
                 "FBXIFY_REMOTE_WORKER_URL is not set. Set it to your worker URL (e.g. https://your-worker.run.app) "
                 "or run with FBXIFY_LOCAL=1 to use the in-process backend."
             )
-        from fbxify.backend import RemoteBackend
+        from backend import RemoteBackend
         backend = RemoteBackend(remote_url)
 
     app = create_app(backend)

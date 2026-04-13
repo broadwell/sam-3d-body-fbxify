@@ -5,7 +5,7 @@ This module provides UI components for developer options and tooling.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
+from i18n import Translator
 
 
 def create_developer_section(translator: Translator) -> Dict[str, Any]:

@@ -1,4 +1,4 @@
-from fbxify.refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.filter_profile import FilterProfile
 
 # Default profile for bones that don't match other patterns (spine, neck, shoulder, etc.)
 # Uses low settings since it applies to the majority of bones

@@ -6,7 +6,7 @@ root motion, mesh inclusion, LOD, and body parameter sampling.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
+from i18n import Translator
 
 
 def create_fbx_options_section(translator: Translator) -> Dict[str, Any]:

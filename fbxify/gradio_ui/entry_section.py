@@ -6,8 +6,8 @@ file upload, bbox options, FOV options, and precision selection.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
-from fbxify.gradio_ui.tracking_section import create_tracking_section
+from i18n import Translator
+from gradio_ui.tracking_section import create_tracking_section
 
 
 TRACKING_MODE_BBOX = "bbox"

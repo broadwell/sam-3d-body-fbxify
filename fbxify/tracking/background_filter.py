@@ -5,8 +5,8 @@ from typing import Dict, List, Optional, Tuple, Any
 
 import numpy as np
 
-from fbxify.tracking.tracklet import Detection, Tracklet
-from fbxify.tracking.tracking_config import TrackingConfig
+from tracking.tracklet import Detection, Tracklet
+from tracking.tracking_config import TrackingConfig
 
 
 @dataclass
