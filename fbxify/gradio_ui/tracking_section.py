@@ -5,8 +5,8 @@ import json
 import tempfile
 import gradio as gr
 from typing import Dict, Any, Tuple, List
-from fbxify.i18n import Translator
-from fbxify.tracking.tracking_config import TrackingConfig
+from i18n import Translator
+from tracking.tracking_config import TrackingConfig
 
 
 def create_tracking_section(translator: Translator) -> Dict[str, Any]:

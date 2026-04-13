@@ -1,4 +1,4 @@
-from fbxify.refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.filter_profile import FilterProfile
 
 ARMS_PROFILE = FilterProfile(
     max_pos_speed=1.0,

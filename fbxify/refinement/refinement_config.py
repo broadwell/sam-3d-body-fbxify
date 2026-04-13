@@ -2,15 +2,15 @@ import json
 import os
 from typing import Any, Dict, Optional
 
-from fbxify.refinement.profiles.filter_profile import FilterProfile
-from fbxify.refinement.profiles.root_profile import ROOT_PROFILE
-from fbxify.refinement.profiles.hands_profile import HANDS_PROFILE
-from fbxify.refinement.profiles.fingers_profile import FINGERS_PROFILE
-from fbxify.refinement.profiles.head_profile import HEAD_PROFILE
-from fbxify.refinement.profiles.legs_profile import LEGS_PROFILE
-from fbxify.refinement.profiles.arms_profile import ARMS_PROFILE
-from fbxify.refinement.profiles.default_profile import DEFAULT_PROFILE
-from fbxify.refinement.foot_planting_config import FootPlantingConfig
+from refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.root_profile import ROOT_PROFILE
+from refinement.profiles.hands_profile import HANDS_PROFILE
+from refinement.profiles.fingers_profile import FINGERS_PROFILE
+from refinement.profiles.head_profile import HEAD_PROFILE
+from refinement.profiles.legs_profile import LEGS_PROFILE
+from refinement.profiles.arms_profile import ARMS_PROFILE
+from refinement.profiles.default_profile import DEFAULT_PROFILE
+from refinement.foot_planting_config import FootPlantingConfig
 
 
 def _filter_profile_from_dict(d: Dict[str, Any], is_root: bool = False) -> FilterProfile:

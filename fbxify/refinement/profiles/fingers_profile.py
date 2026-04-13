@@ -1,4 +1,4 @@
-from fbxify.refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.filter_profile import FilterProfile
 
 FINGERS_PROFILE = FilterProfile( # fingers typically has high-frequency jitter
     max_pos_speed=0.5,

@@ -1,4 +1,4 @@
-from fbxify.refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.filter_profile import FilterProfile
 
 HEAD_PROFILE = FilterProfile( # head typically has yaw flicker
     max_pos_speed=2.0,

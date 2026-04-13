@@ -1,8 +1,8 @@
 from typing import Dict, Any, List, Optional
 import numpy as np
-from fbxify.tracking.tracklet import Tracklet
-from fbxify.tracking.mhr_tracker import MHRTracker
-from fbxify.tracking.tracking_config import TrackingConfig
+from tracking.tracklet import Tracklet
+from tracking.mhr_tracker import MHRTracker
+from tracking.tracking_config import TrackingConfig
 
 
 def apply_frame_assignments(

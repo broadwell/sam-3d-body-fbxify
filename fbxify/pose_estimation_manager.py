@@ -12,9 +12,9 @@ import torch
 import numpy as np
 from sam_3d_body import load_sam_3d_body, SAM3DBodyEstimator
 from sam_3d_body.data.utils.io import load_image
-from fbxify.utils import to_serializable, extract_fbx_faces_with_blender
-from fbxify import VERSION
-from fbxify.i18n import Translator, DEFAULT_LANGUAGE
+from utils import to_serializable, extract_fbx_faces_with_blender
+#from fbxify import VERSION
+from i18n import Translator, DEFAULT_LANGUAGE
 import json
 import os
 import glob
@@ -954,7 +954,7 @@ class PoseEstimationManager:
         metadata = {
             "source": source_name or "unknown",
             "creation_date": datetime.utcnow().isoformat() + "Z",
-            "version": VERSION,
+            #"version": VERSION,
             "num_people": num_people,
             "frames": estimation_results,
         }
@@ -1011,16 +1011,16 @@ class PoseEstimationManager:
             
             # Check version compatibility
             file_version = metadata.get("version", "unknown")
-            if file_version != VERSION:
-                warning_msg = (
-                    f"WARNING: Estimation file version ({file_version}) differs from current version ({VERSION}). "
-                    f"File may have been created with a different version of the software. "
-                    f"Proceeding with caution - errors may occur if formats are incompatible."
-                )
-                print(warning_msg)
-                # Store version mismatch in metadata for later error messages
-                metadata["_version_mismatch"] = True
-                metadata["_file_version"] = file_version
+            #if file_version != VERSION:
+            #    warning_msg = (
+            #        f"WARNING: Estimation file version ({file_version}) differs from current version ({VERSION}). "
+            #        f"File may have been created with a different version of the software. "
+            #        f"Proceeding with caution - errors may occur if formats are incompatible."
+            #    )
+            #    print(warning_msg)
+            #    # Store version mismatch in metadata for later error messages
+            #    metadata["_version_mismatch"] = True
+            #    metadata["_file_version"] = file_version
             
             print(f"Loaded estimation results from {file_path}")
             print(f"  Source: {metadata['source']}")

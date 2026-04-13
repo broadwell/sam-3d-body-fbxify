@@ -12,7 +12,8 @@ pytorch-lightning
 roma
 pyrender
 opencv-python
-pymomentum-gpu==0.1.94.post0
+#pymomentum-gpu==0.1.94.post0
+pymomentum-gpu
 yacs
 scikit-image
 einops

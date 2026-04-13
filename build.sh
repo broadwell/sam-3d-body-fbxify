@@ -5,10 +5,10 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
-if command -v docker >/dev/null 2>&1; then
-  echo "Building Docker image..."
-  exec "$SCRIPT_DIR/fbxify/docker/build_docker_standalone.sh" "$@"
-fi
+#if command -v docker >/dev/null 2>&1; then
+#  echo "Building Docker image..."
+#  exec "$SCRIPT_DIR/fbxify/docker/build_docker_standalone.sh" "$@"
+#fi
 
 echo "Docker not found."
 read -p "Create conda environment 'fbxify'? (y/n): " CHOICE
@@ -16,7 +16,7 @@ read -p "Create conda environment 'fbxify'? (y/n): " CHOICE
 if [ "${CHOICE,,}" = "y" ] || [ "${CHOICE,,}" = "yes" ]; then
   if command -v conda >/dev/null 2>&1; then
     echo "Creating conda environment fbxify..."
-    if ! conda create -n fbxify python=3.12 -y; then
+    if ! conda create -n fbxify python=3.13 -y; then
       echo "Conda create failed. Falling back to system Python."
     else
       echo "Installing requirements..."
@@ -37,7 +37,7 @@ elif command -v python >/dev/null 2>&1; then
 fi
 
 if [ -z "$PYTHON" ]; then
-  echo "Python not found. Please install Python 3.12 or use Docker/Conda."
+  echo "Python not found. Please install Python 3.13 or use Docker/Conda."
   exit 1
 fi
 

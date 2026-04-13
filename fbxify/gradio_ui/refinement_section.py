@@ -9,16 +9,16 @@ import tempfile
 import gradio as gr
 from typing import Dict, Any, Tuple, Optional, List
 from dataclasses import asdict
-from fbxify.refinement.profiles.filter_profile import FilterProfile
-from fbxify.refinement.profiles.root_profile import ROOT_PROFILE
-from fbxify.refinement.profiles.hands_profile import HANDS_PROFILE
-from fbxify.refinement.profiles.fingers_profile import FINGERS_PROFILE
-from fbxify.refinement.profiles.head_profile import HEAD_PROFILE
-from fbxify.refinement.profiles.legs_profile import LEGS_PROFILE
-from fbxify.refinement.profiles.arms_profile import ARMS_PROFILE
-from fbxify.refinement.profiles.default_profile import DEFAULT_PROFILE
-from fbxify.refinement.refinement_config import RefinementConfig
-from fbxify.i18n import Translator
+from refinement.profiles.filter_profile import FilterProfile
+from refinement.profiles.root_profile import ROOT_PROFILE
+from refinement.profiles.hands_profile import HANDS_PROFILE
+from refinement.profiles.fingers_profile import FINGERS_PROFILE
+from refinement.profiles.head_profile import HEAD_PROFILE
+from refinement.profiles.legs_profile import LEGS_PROFILE
+from refinement.profiles.arms_profile import ARMS_PROFILE
+from refinement.profiles.default_profile import DEFAULT_PROFILE
+from refinement.refinement_config import RefinementConfig
+from i18n import Translator
 
 
 def create_filter_profile_ui(profile: FilterProfile, section_name: str, translator: Translator, is_root: bool = False) -> Dict[str, gr.Component]:

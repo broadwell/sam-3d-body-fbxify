@@ -442,7 +442,16 @@ class FbxDataPrepManager:
         # 1. external camera/joint space → armature/extrinsic space, (used in fbx_data_prep_manager.py)
         # 2. armature/extrinsic space → Blender space. (used in blender_utils/build_armature_and_pose.py)
         """
-        for _, frame_data in estimation_results.items():
+        # PMB previously this didn't have the ["frames"]
+        # PMB Also, this seems to be trying to edit a list while iterating through it.
+        #     Does that actually work?
+        for _, frame_data in estimation_results["frames"].items():
+            if isinstance(frame_data, str):
+                print("PMB frame_data is just a string, skipping camera space conversion")
+                print("PMB frame_data:", frame_data)
+                print("PMB length of estimation_results:", len(estimation_results))
+                print("PMB type of estimation_results:", type(estimation_results))
+                break
             for _, estimation_data in frame_data.items():
                 # Pred joint coords and keypoints have [[x, y, z], [x, y, z], ...] per bone
                 joint_coords_cam = np.array(estimation_data["pred_joint_coords"]) if estimation_data.get("pred_joint_coords") is not None else None
@@ -451,7 +460,9 @@ class FbxDataPrepManager:
 
                 joint_coords_arm = convert_camera_space_to_armature_space_array(joint_coords_cam)
                 pred_keypoints_3d_arm = convert_camera_space_to_armature_space_array(pred_keypoints_3d_cam)
-                pred_cam_t_arm = convert_camera_space_to_armature_space(pred_cam_t_cam)
+                # PMB XXX how is this supposed to work? 
+                #pred_cam_t_arm = convert_camera_space_to_armature_space(pred_cam_t_cam)
+                pred_cam_t_arm = pred_cam_t_cam
 
                 estimation_data["pred_joint_coords"] = joint_coords_arm.tolist()
                 estimation_data["pred_keypoints_3d"] = pred_keypoints_3d_arm.tolist()

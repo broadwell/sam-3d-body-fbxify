@@ -2,18 +2,18 @@ from typing import Dict, Any, List, Tuple, Optional, TextIO
 import os
 import numpy as np
 from datetime import datetime
-from fbxify.tracking.tracker import TrackletTracker
-from fbxify.tracking.tracking_config import TrackingConfig
-from fbxify.tracking.tracklet import Detection, Tracklet
+from tracking.tracker import TrackletTracker
+from tracking.tracking_config import TrackingConfig
+from tracking.tracklet import Detection, Tracklet
 from tqdm import tqdm
-from fbxify.tracking.metrics import (
+from tracking.metrics import (
     mean_abs_diff,
     l2_distance,
     bbox_iou_xywh,
     similarity_from_distance,
 )
 
-from fbxify.tracking.background_filter import (
+from tracking.background_filter import (
     BackgroundFilterStats,
     filter_frames,
     filter_tracklets_by_score,

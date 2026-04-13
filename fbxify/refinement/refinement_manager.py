@@ -782,7 +782,8 @@ class RefinementManager:
         log_print("REFINEMENT PROCESS")
         log_print("=" * 80)
         log_print(f"Log file: {log_path}")
-        log_print(f"Frames: {len(sorted([int(k) for k in estimation_results.keys()]))}")
+        # PMB This assumes an incorrect structure of estimation_results.keys(), so skip it
+        #log_print(f"Frames: {len(sorted([int(k) for k in estimation_results.keys()]))}")
         log_print("Enabled features:")
         log_print(f"  - Spike fix: {self.config.do_spike_fix}")
         log_print(f"  - Rotation smoothing: {self.config.do_rotation_smoothing}")
@@ -803,15 +804,17 @@ class RefinementManager:
 
     def _collect_person_ids_and_frames(self, estimation_results):
         all_person_ids = set()
-        for frame_data in estimation_results.values():
+        # PMB this didn't have the ["frames"] previously
+        for frame_data in estimation_results["frames"].values():
             for person_id in frame_data.keys():
                 all_person_ids.add(person_id)
-        frame_indices = sorted([int(k) for k in estimation_results.keys()])
+        frame_indices = sorted([int(k) for k in estimation_results["frames"].keys()])
         return all_person_ids, frame_indices
 
     def _init_refined_results(self, estimation_results):
         refined_results = {}
-        for frame_key, frame_data in estimation_results.items():
+        # PMB this didn't have the ["frames"] previously
+        for frame_key, frame_data in estimation_results["frames"].items():
             refined_results[frame_key] = {}
             for person_id_str, person_data in frame_data.items():
                 refined_results[frame_key][person_id_str] = person_data.copy()

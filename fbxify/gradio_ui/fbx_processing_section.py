@@ -5,8 +5,8 @@ This module provides UI components for FBX inputs like profile and pose JSON.
 """
 import gradio as gr
 from typing import Dict, Any, Tuple
-from fbxify.i18n import Translator
-from fbxify.metadata import PROFILES
+from i18n import Translator
+from metadata import PROFILES
 
 
 def create_fbx_processing_section(translator: Translator) -> Dict[str, Any]:
