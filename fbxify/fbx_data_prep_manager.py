@@ -442,15 +442,11 @@ class FbxDataPrepManager:
         # 1. external camera/joint space → armature/extrinsic space, (used in fbx_data_prep_manager.py)
         # 2. armature/extrinsic space → Blender space. (used in blender_utils/build_armature_and_pose.py)
         """
-        # PMB previously this didn't have the ["frames"]
-        # PMB Also, this seems to be trying to edit a list while iterating through it.
+        # PMB This seems to be trying to edit a list while iterating through it.
         #     Does that actually work?
-        for _, frame_data in estimation_results["frames"].items():
+        for _, frame_data in estimation_results.items():
             if isinstance(frame_data, str):
-                print("PMB frame_data is just a string, skipping camera space conversion")
-                print("PMB frame_data:", frame_data)
-                print("PMB length of estimation_results:", len(estimation_results))
-                print("PMB type of estimation_results:", type(estimation_results))
+                print("PMB frame_data is just a string, JSON was parsed incorrectly")
                 break
             for _, estimation_data in frame_data.items():
                 # Pred joint coords and keypoints have [[x, y, z], [x, y, z], ...] per bone

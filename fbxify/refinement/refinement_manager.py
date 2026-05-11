@@ -782,8 +782,7 @@ class RefinementManager:
         log_print("REFINEMENT PROCESS")
         log_print("=" * 80)
         log_print(f"Log file: {log_path}")
-        # PMB This assumes an incorrect structure of estimation_results.keys(), so skip it
-        #log_print(f"Frames: {len(sorted([int(k) for k in estimation_results.keys()]))}")
+        log_print(f"Frames: {len(sorted([int(k) for k in estimation_results.keys()]))}")
         log_print("Enabled features:")
         log_print(f"  - Spike fix: {self.config.do_spike_fix}")
         log_print(f"  - Rotation smoothing: {self.config.do_rotation_smoothing}")
@@ -804,8 +803,7 @@ class RefinementManager:
 
     def _collect_person_ids_and_frames(self, estimation_results):
         all_person_ids = set()
-        # PMB this didn't have the ["frames"] previously
-        for frame_data in estimation_results["frames"].values():
+        for frame_data in estimation_results.values():
             for person_id in frame_data.keys():
                 all_person_ids.add(person_id)
         frame_indices = sorted([int(k) for k in estimation_results["frames"].keys()])
@@ -813,8 +811,7 @@ class RefinementManager:
 
     def _init_refined_results(self, estimation_results):
         refined_results = {}
-        # PMB this didn't have the ["frames"] previously
-        for frame_key, frame_data in estimation_results["frames"].items():
+        for frame_key, frame_data in estimation_results.items():
             refined_results[frame_key] = {}
             for person_id_str, person_data in frame_data.items():
                 refined_results[frame_key][person_id_str] = person_data.copy()
@@ -1696,6 +1693,7 @@ class RefinementManager:
         # CRITICAL: Interpolation must happen FIRST, before any other processing
         if self.config.do_interpolate_missing_keyframes:
             # Interpolate missing frames before processing
+            print("interpolating missing frames")
             R_series = self._interpolate_missing_frames(R_series, is_rotation=True)
         else:
             # Process islands of continuous data separately
@@ -1725,8 +1723,9 @@ class RefinementManager:
                         R_refined[start_idx + i] = refined_val
                 
                 return R_refined
-        
-        R_original = [[[R[i][j] for j in range(3)] for i in range(3)] for R in R_series]  # Deep copy
+       
+        #R_original = [[[R[i][j] for j in range(3)] for i in range(3)] for R in R_series]  # Deep copy
+        R_original = copy.deepcopy(R_series)  # Deep copy
         q = [quat_from_R(R) for R in R_series]   # [T] quats
         q = fix_quat_hemisphere(q)
 
@@ -1868,6 +1867,7 @@ class RefinementManager:
                 "WARNING: None values still present in root translation after interpolation check, "
                 "skipping stabilization"
             )
+            log_print("PMB ", trans)
             return None
         return trans
 
@@ -1992,7 +1992,9 @@ class RefinementManager:
         """
         if root_motion is None:
             return root_motion
-        
+
+        log_print("PMB Root motion:", root_motion)
+
         prof = self.config.profiles.get("root", self.config.profiles["*"])
         stabilized = {}
         

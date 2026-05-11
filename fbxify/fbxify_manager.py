@@ -419,7 +419,6 @@ class FbxifyManager:
                 fps = 30.0
 
         # Convert camera space to armature space
-        print("PMB doing camera space conversion in fbixfy_manager.py")
         estimation_results = self.data_prep_manager.convert_camera_space_to_armature_space(estimation_results)
 
         # Apply extrinsics before refinement if provided
@@ -494,7 +493,7 @@ class FbxifyManager:
             
             # Collect body parameters from estimation results
             body_params_collection = {}  # person_id -> list of {scale_params, shape_params}
-            
+           
             for frame_data in estimation_results.values():
                 for person_id, estimation_data in frame_data.items():
                     if person_id not in body_params_collection:

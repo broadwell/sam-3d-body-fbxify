@@ -182,18 +182,22 @@ class LocalBackend:
             else:
                 num_people = None
 
-            file_path = input_file.name
-            file_ext = os.path.splitext(file_path)[1].lower()
+            # PMB
+            file_path = input_file
+            file_name = input_file.name
+            file_ext = os.path.splitext(file_name)[1].lower()
             is_video = file_ext in [".mp4", ".avi", ".mov", ".mkv", ".webm"]
             fps = 30.0
             if is_video:
                 frame_paths, temp_dir, fps = self.manager.prepare_video(file_path)
             else:
-                frame_paths = [file_path]
+                #frame_paths = [file_path]
+                frame_paths = [file_name]
                 temp_dir = None
 
-            fov_file_path = fov_file.name if fov_file else None
-            self.manager.set_camera_intrinsics(fov_method, fov_file_path, frame_paths, sample_number)
+            #PMB
+            #fov_file_path = fov_file.name if fov_file else None
+            self.manager.set_camera_intrinsics(fov_method, fov_file, frame_paths, sample_number)
 
             precision_value = "fp32"
             if isinstance(precision, str):

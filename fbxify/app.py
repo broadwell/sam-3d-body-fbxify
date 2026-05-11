@@ -12,6 +12,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 top_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(top_dir)
 sys.path.append('sam_3d_body')
+# PMB
+sys.path.append('fbxify')
 
 import argparse
 import json

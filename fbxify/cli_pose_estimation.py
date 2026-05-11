@@ -9,12 +9,18 @@ import argparse
 import sys
 import shutil
 
+# PMB
+sys.path.append('fbxify')
+from pathlib import Path
+
 from fbxify.cli_common import get_checkpoint_paths
 from fbxify.pose_estimation_manager import PoseEstimationManager
 from fbxify.fbx_data_prep_manager import FbxDataPrepManager
 from fbxify.fbxify_manager import FbxifyManager
 from fbxify.tracking.tracking_config import TrackingConfig
+from tracking.tracking_manager import TrackingManager
 
+from i18n import Translator, DEFAULT_LANGUAGE
 
 def parse_args():
     """Parse command-line arguments."""
@@ -102,6 +108,12 @@ def parse_args():
         help="Path to bounding box file (CSV format)",
     )
     parser.add_argument(
+        "--output_tracking_bbox",
+        type=bool,
+        default=False,
+        help="Whether to draw the tracking bboxes on the output frames",
+    )
+    parser.add_argument(
         "--missing_bbox_behavior",
         type=str,
         default="Run Detection",
@@ -150,18 +162,31 @@ def main():
     if not os.path.exists(args.input_file):
         print(f"Error: Input file not found: {args.input_file}")
         sys.exit(1)
-    if args.fov_method == "File" and args.fov_file is None:
-        print("Error: --fov_file is required when --fov_method is File")
-        sys.exit(1)
-    if args.fov_method == "File" and not os.path.exists(args.fov_file):
-        print(f"Error: FOV file not found: {args.fov_file}")
-        sys.exit(1)
-    if args.bbox_file and not os.path.exists(args.bbox_file):
-        print(f"Error: Bbox file not found: {args.bbox_file}")
-        sys.exit(1)
-    if args.tracking_config and not os.path.exists(args.tracking_config):
-        print(f"Error: Tracking config file not found: {args.tracking_config}")
-        sys.exit(1)
+    if args.fov_method == "File":
+        if args.fov_file is None:
+            print("Error: --fov_file is required when --fov_method is File")
+            sys.exit(1)
+    if args.fov_method == "File":
+        if not os.path.exists(args.fov_file):
+            print(f"Error: FOV file not found: {args.fov_file}")
+            sys.exit(1)
+        fov_file = Path(args.fov_file)
+    else:
+        fov_file = None
+    if args.bbox_file:
+        if not os.path.exists(args.bbox_file):
+            print(f"Error: Bbox file not found: {args.bbox_file}")
+            sys.exit(1)
+        bbox_file=Path(args.bbox_file)
+    else:
+        bbox_file = None
+    if args.tracking_config:
+        if not os.path.exists(args.tracking_config):
+            print(f"Error: Tracking config file not found: {args.tracking_config}")
+            sys.exit(1)
+        tracking_config = Path(args.tracking_config)
+    else:
+        tracking_config = None
 
     try:
         checkpoint_path, mhr_path = get_checkpoint_paths(args.model)
@@ -171,6 +196,9 @@ def main():
 
     detector_path = args.detector_path or os.environ.get("SAM3D_DETECTOR_PATH", "")
     fov_path = args.fov_path or os.environ.get("SAM3D_FOV_PATH", None)
+
+    # Initialize translator with default language
+    translator = Translator(DEFAULT_LANGUAGE)
 
     print("Initializing SAM 3D Body estimator...")
     try:
@@ -189,79 +217,103 @@ def main():
 
     data_prep_manager = FbxDataPrepManager()
     manager = FbxifyManager(estimation_manager, data_prep_manager)
+    tracking_manager = TrackingManager()
+    from backend import LocalBackend
+    backend = LocalBackend(manager, tracking_manager)
 
+    #PMB
     print(f"Processing: {args.input_file}")
-    file_ext = os.path.splitext(args.input_file)[1].lower()
-    is_video = file_ext in [".mp4", ".avi", ".mov", ".mkv", ".webm"]
+    #file_ext = os.path.splitext(args.input_file)[1].lower()
+    #is_video = file_ext in [".mp4", ".avi", ".mov", ".mkv", ".webm"]
 
     temp_dir = None
     try:
-        fps = 30.0
-        if is_video:
-            print("Extracting frames from video...")
-            frame_paths, temp_dir, fps = manager.prepare_video(args.input_file)
-            print(f"Video FPS: {fps}")
-        else:
-            frame_paths = [args.input_file]
+#        fps = 30.0
+#        if is_video:
+#            print("Extracting frames from video...")
+#            frame_paths, temp_dir, fps = manager.prepare_video(args.input_file)
+#            print(f"Video FPS: {fps}")
+#        else:
+#            frame_paths = [args.input_file]
+#
+#        print(f"Processing {len(frame_paths)} frame(s)...")
+#
+#        tracking_mode = args.tracking_mode
+#        if tracking_mode != "bbox" and args.bbox_file:
+#            print("Info: bbox file provided, switching tracking_mode to bbox")
+#            tracking_mode = "bbox"
+#
+#        # Resolve tracking config: from file when provided, else default for inference mode
+#        tracking_config = None
+#        if args.tracking_config:
+#            tracking_config = TrackingConfig.load_json(args.tracking_config)
+#            print(f"Loaded tracking config from: {args.tracking_config}")
+#        elif tracking_mode in ("inference", "inference_bbox"):
+#            tracking_config = TrackingConfig()
+#
+#        bbox_dict = None
+#        num_people = args.num_people
+#        if tracking_mode == "bbox":
+#            if not args.bbox_file:
+#                print("Error: --bbox_file is required when --tracking_mode is bbox")
+#                sys.exit(1)
+#            print("Loading bounding boxes...")
+#            bbox_dict = manager.prepare_bboxes(args.bbox_file)
+#            unique_person_ids = set()
+#            for bboxes in bbox_dict.values():
+#                for bbox in bboxes:
+#                    if len(bbox) > 0:
+#                        unique_person_ids.add(bbox[0])
+#            num_people = len(unique_person_ids) if unique_person_ids else 0
+#            print(f"Found {num_people} unique person(s) in bbox file")
+#        else:
+#            if num_people <= 0:
+#                print("Error: --num_people must be greater than 0")
+#                sys.exit(1)
+#            if args.fov_method != "Default":
+#                print(f"Setting camera intrinsics (method: {args.fov_method})...")
+#                fov_file_path = args.fov_file if args.fov_method == "File" else None
+#                manager.set_camera_intrinsics(
+#                    args.fov_method,
+#                    fov_file_path,
+#                    frame_paths,
+#                    args.sample_number,
+#                )
 
-        print(f"Processing {len(frame_paths)} frame(s)...")
+            # PMB
+            backend.run_pose_estimation(
+                input_file=Path(args.input_file),
+                tracking_mode=args.tracking_mode,
+                bbox_file=bbox_file,
+                num_people=args.num_people,
+                missing_bbox_behavior=args.missing_bbox_behavior,
+                fov_method=args.fov_method,
+                fov_file=fov_file,
+                sample_number=args.sample_number,
+                precision=args.precision,
+                output_tracking_bbox=args.output_tracking_bbox,
+                tracking_config=tracking_config,
+                frame_batch_size=args.frame_batch_size,
+                detection_batch_size=args.detection_batch_size,
+                lang=translator.lang,
+                progress_callback=None,
+            )
 
-        tracking_mode = args.tracking_mode
-        if tracking_mode != "bbox" and args.bbox_file:
-            print("Info: bbox file provided, switching tracking_mode to bbox")
-            tracking_mode = "bbox"
-
-        # Resolve tracking config: from file when provided, else default for inference mode
-        tracking_config = None
-        if args.tracking_config:
-            tracking_config = TrackingConfig.load_json(args.tracking_config)
-            print(f"Loaded tracking config from: {args.tracking_config}")
-        elif tracking_mode in ("inference", "inference_bbox"):
-            tracking_config = TrackingConfig()
-
-        bbox_dict = None
-        num_people = args.num_people
-        if tracking_mode == "bbox":
-            if not args.bbox_file:
-                print("Error: --bbox_file is required when --tracking_mode is bbox")
-                sys.exit(1)
-            print("Loading bounding boxes...")
-            bbox_dict = manager.prepare_bboxes(args.bbox_file)
-            unique_person_ids = set()
-            for bboxes in bbox_dict.values():
-                for bbox in bboxes:
-                    if len(bbox) > 0:
-                        unique_person_ids.add(bbox[0])
-            num_people = len(unique_person_ids) if unique_person_ids else 0
-            print(f"Found {num_people} unique person(s) in bbox file")
-        else:
-            if num_people <= 0:
-                print("Error: --num_people must be greater than 0")
-                sys.exit(1)
-            if args.fov_method != "Default":
-                print(f"Setting camera intrinsics (method: {args.fov_method})...")
-                fov_file_path = args.fov_file if args.fov_method == "File" else None
-                manager.set_camera_intrinsics(
-                    args.fov_method,
-                    fov_file_path,
-                    frame_paths,
-                    args.sample_number,
-                )
-
-        manager.run_pose_estimation_only(
-            frame_paths,
-            num_people,
-            bbox_dict,
-            fps,
-            args.estimation_json,
-            progress_callback=None,
-            missing_bbox_behavior=args.missing_bbox_behavior,
-            frame_batch_size=args.frame_batch_size,
-            detection_batch_size=args.detection_batch_size,
-            tracking_mode=tracking_mode,
-            tracking_config=tracking_config,
-        )
-        print(f"Estimation results saved to: {args.estimation_json}")
+        # PMB
+#        manager.run_pose_estimation_only(
+#            frame_paths,
+#            num_people,
+#            bbox_dict,
+#            fps,
+#            args.estimation_json,
+#            progress_callback=None,
+#            missing_bbox_behavior=args.missing_bbox_behavior,
+#            frame_batch_size=args.frame_batch_size,
+#            detection_batch_size=args.detection_batch_size,
+#            tracking_mode=tracking_mode,
+#            tracking_config=tracking_config,
+#        )
+#        print(f"Estimation results saved to: {args.estimation_json}")
     except Exception as e:
         print(f"Error: {e}")
         import traceback

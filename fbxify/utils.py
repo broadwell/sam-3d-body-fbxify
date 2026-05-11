@@ -19,8 +19,11 @@ except Exception:
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any
 
-from metadata import PROFILES, MHR_KEYPOINT_INDEX
-from i18n import Translator, DEFAULT_LANGUAGE
+#PMB
+#from metadata import PROFILES, MHR_KEYPOINT_INDEX
+#from i18n import Translator, DEFAULT_LANGUAGE
+from fbxify.metadata import PROFILES, MHR_KEYPOINT_INDEX
+from fbxify.i18n import Translator, DEFAULT_LANGUAGE
 
 MHR_EXTENDED_KEYPOINT_INDEX = {
     **MHR_KEYPOINT_INDEX,

@@ -7,14 +7,22 @@ This module is responsible for:
 - Saving/loading estimation results as JSON files
 - Camera intrinsics caching
 """
+
+# PMB
+import sys
+sys.path.append("fbxify")
+
 from tqdm import tqdm
 import torch
 import numpy as np
 from sam_3d_body import load_sam_3d_body, SAM3DBodyEstimator
 from sam_3d_body.data.utils.io import load_image
-from utils import to_serializable, extract_fbx_faces_with_blender
+# PMB
+from fbxify.utils import to_serializable, extract_fbx_faces_with_blender
+#from utils import to_serializable, extract_fbx_faces_with_blender
 #from fbxify import VERSION
-from i18n import Translator, DEFAULT_LANGUAGE
+from fbxify.i18n import Translator, DEFAULT_LANGUAGE
+#from i18n import Translator, DEFAULT_LANGUAGE
 import json
 import os
 import glob
@@ -84,7 +92,7 @@ class PoseEstimationManager:
         if detector_name:
             detector_path = detector_path or os.environ.get("SAM3D_DETECTOR_PATH", "")
             try:
-                from tools.build_detector import HumanDetector
+                from fbxify.tools.build_detector import HumanDetector
                 human_detector = HumanDetector(name=detector_name, device=self.device, path=detector_path)
                 print(f"Human detector '{detector_name}' loaded successfully.")
             except Exception as e:
@@ -96,7 +104,7 @@ class PoseEstimationManager:
         if fov_name:
             fov_path = fov_path or os.environ.get("SAM3D_FOV_PATH", "")
             try:
-                from tools.build_fov_estimator import FOVEstimator
+                from fbxify.tools.build_fov_estimator import FOVEstimator
                 fov_estimator = FOVEstimator(name=fov_name, device=self.device, path=fov_path)
                 print(f"FOV estimator '{fov_name}' loaded successfully.")
             except Exception as e:
@@ -996,8 +1004,9 @@ class PoseEstimationManager:
             data = json.load(f)
         
         # Check if it's new format (has metadata keys) or old format (direct frames)
-        if isinstance(data, dict) and "frames" in data and "version" in data:
+        if isinstance(data, dict) and "frames" in data and "creation_date" in data:
             # New format with metadata
+            print("PMB file is in new format")
             metadata = {
                 "source": data.get("source", "unknown"),
                 "creation_date": data.get("creation_date", "unknown"),
@@ -1029,6 +1038,7 @@ class PoseEstimationManager:
             return frames, metadata
         else:
             # Old format (direct frames dict) - wrap in metadata
+            print("PMB file is in old format")
             print(f"Loaded estimation results from {file_path} (old format, no metadata)")
             metadata = {
                 "source": "unknown",
