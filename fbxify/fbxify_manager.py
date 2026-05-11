@@ -419,7 +419,6 @@ class FbxifyManager:
                 fps = 30.0
 
         # Convert camera space to armature space
-        print("PMB doing camera space conversion in fbixfy_manager.py")
         estimation_results = self.data_prep_manager.convert_camera_space_to_armature_space(estimation_results)
 
         # Apply extrinsics before refinement if provided

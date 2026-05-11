@@ -442,7 +442,7 @@ class FbxDataPrepManager:
         # 1. external camera/joint space → armature/extrinsic space, (used in fbx_data_prep_manager.py)
         # 2. armature/extrinsic space → Blender space. (used in blender_utils/build_armature_and_pose.py)
         """
-        # PMB Also, this seems to be trying to edit a list while iterating through it.
+        # PMB This seems to be trying to edit a list while iterating through it.
         #     Does that actually work?
         for _, frame_data in estimation_results.items():
             for _, estimation_data in frame_data.items():
