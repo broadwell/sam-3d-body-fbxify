@@ -3,7 +3,6 @@ import os
 from typing import Any, Dict, Optional
 import sys
 
-# PMB
 sys.path.append('./fbxify')
 
 from refinement.profiles.filter_profile import FilterProfile

@@ -806,7 +806,7 @@ class RefinementManager:
         for frame_data in estimation_results.values():
             for person_id in frame_data.keys():
                 all_person_ids.add(person_id)
-        frame_indices = sorted([int(k) for k in estimation_results["frames"].keys()])
+        frame_indices = sorted([int(k) for k in estimation_results.keys()])
         return all_person_ids, frame_indices
 
     def _init_refined_results(self, estimation_results):
@@ -1867,7 +1867,6 @@ class RefinementManager:
                 "WARNING: None values still present in root translation after interpolation check, "
                 "skipping stabilization"
             )
-            log_print("PMB ", trans)
             return None
         return trans
 
@@ -1992,8 +1991,6 @@ class RefinementManager:
         """
         if root_motion is None:
             return root_motion
-
-        log_print("PMB Root motion:", root_motion)
 
         prof = self.config.profiles.get("root", self.config.profiles["*"])
         stabilized = {}
